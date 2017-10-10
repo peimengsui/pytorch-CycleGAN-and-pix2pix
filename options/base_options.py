@@ -16,7 +16,27 @@ class BaseOptions():
         help='path to images (should have subfolders trainA, trainB, valA, valB, etc)')
     self.parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
     self.parser.add_argument('--loadSize', type=int, default=286, help='scale images to this size')
+    self.parser.add_argument(
+        '--loadSizeH',
+        type=int,
+        default=0,
+        help='scale images to this height. Overrides loadsize')
+    self.parser.add_argument(
+        '--loadSizeW',
+        type=int,
+        default=0,
+        help='scale images to this width. Overrides loadsize')
     self.parser.add_argument('--fineSize', type=int, default=256, help='then crop to this size')
+    self.parser.add_argument(
+        '--fineSizeH',
+        type=int,
+        default=0,
+        help='then crop to this height. overrides finesize')
+    self.parser.add_argument(
+        '--fineSizeW',
+        type=int,
+        default=0,
+        help='then crop to this width.overrides finesize')
     self.parser.add_argument('--input_nc', type=int, default=3, help='# of input image channels')
     self.parser.add_argument('--output_nc', type=int, default=3, help='# of output image channels')
     self.parser.add_argument(
@@ -118,6 +138,13 @@ class BaseOptions():
       self.initialize()
     self.opt = self.parser.parse_args()
     self.opt.isTrain = self.isTrain   # train or test
+
+    if self.opt.fineSizeH == 0 or self.opt.fineSizeW == 0:
+      self.opt.fineSizeH = self.opt.fineSize
+      self.opt.fineSizeW = self.opt.fineSize
+    if self.opt.loadSizeH == 0 or self.opt.loadSizeW == 0:
+      self.opt.loadSizeH = self.opt.loadSize
+      self.opt.loadSizeW = self.opt.loadSize
 
     str_ids = self.opt.gpu_ids.split(',')
     self.opt.gpu_ids = []

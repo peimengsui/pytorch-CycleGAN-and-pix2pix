@@ -15,7 +15,7 @@ model = create_model(opt)
 visualizer = Visualizer(opt)
 total_steps = 0
 
-gen_a_loss = np.inf
+best_loss = np.inf
 
 for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
 
@@ -51,8 +51,8 @@ for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
     model.save(epoch)
     # Probably a bad idea but something is better than visual inspection
     errors_epoch = model.get_current_errors()
-    if errors_epoch['G_A'] < gen_a_loss:
-      gen_a_loss = errors_epoch['G_A']
+    if errors_epoch['total'] < best_loss:
+      best_loss = errors_epoch['total']
       model.save('best')
 
   print('End of epoch %d / %d \t Time Taken: %d sec' %

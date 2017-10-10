@@ -1,17 +1,18 @@
 import os.path
+import random
+from pdb import set_trace as st
+
+import numpy as np
+import PIL
+from PIL import Image
+from skimage import img_as_ubyte
+from skimage.io import imread
+
 import torchvision.transforms as transforms
 from data.base_dataset import BaseDataset, get_transform
 from data.image_folder import make_dataset
-from PIL import Image
-import PIL
-from pdb import set_trace as st
-import random
-
 from DataUtils.add_noise_to_image import alpha_blend
 from natsort import natsorted
-import numpy as np
-from skimage.io import imread
-from skimage import img_as_ubyte
 
 
 class OverlayDataset(BaseDataset):
@@ -40,12 +41,21 @@ class OverlayDataset(BaseDataset):
     orig_pair_path = self.orig_paths[self.orig_permute_paths[index_orig]]
     noise_path = self.noise_paths[self.orig_permute_paths[index_orig]]
     #print('(A, B) = (%d, %d)' % (index_A, index_B))
-    if self.imagemode == 'RGB':
+    if self.opt.which_direction == 'BtoA':
+      input_nc = self.opt.output_nc
+      output_nc = self.opt.input_nc
+    else:
+      input_nc = self.opt.input_nc
+      output_nc = self.opt.output_nc
+
+    if input_nc == 1:
       orig_img = Image.open(orig_path).convert('RGB')
+    else:
+      orig_img = Image.open(orig_path).convert('L')
+    if output_nc == 1:
       noise_img = Image.open(noise_path).convert('RGB')
       orig_pair_img = Image.open(orig_pair_path).convert('RGB')
-    elif self.imagemode == 'L':
-      orig_img = Image.open(orig_path).convert('L')
+    else:
       noise_img = Image.open(noise_path).convert('L')
       orig_pair_img = Image.open(orig_pair_path).convert('L')
     A_img = self.transform(orig_img)
